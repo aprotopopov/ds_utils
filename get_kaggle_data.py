@@ -9,7 +9,8 @@ def load_url(link_field, buf_size):
 
     with open(name, 'wb') as f:
         response = s.get(file_url, stream=True)
-        shutil.copyfileobj(response.raw, f, buf_size)                 # save response to file
+        # save response to file
+        shutil.copyfileobj(response.raw, f, length=buf_size) 
 
     return "downloading {} is completed".format(name)
     
@@ -24,7 +25,11 @@ login_data = {'UserName':'',
               'Password':''}
 
 s = requests.session()
-s.post(login_url, data=login_data)
+
+if login_data['UserName'] and login_data['Password']:
+    s.post(login_url, data=login_data)
+else:
+    raise Exception("Enter your username and password")
 
 r = s.get(download_url)
 soup = bs4.BeautifulSoup(r.text, 'lxml')
